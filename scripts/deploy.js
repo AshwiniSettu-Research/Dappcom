@@ -12,6 +12,31 @@ const tokens = (n) => {
 }
 
 async function main() {
+    // Setup accounts
+    const [deployer] = await ethers.getSigners()
+
+    // Deploy Dappcom
+    const Dappcom = await hre.ethers.getContractFactory("Dappcom")
+    const dappcom = await Dappcom.deploy()
+    await dappcom.deployed()
+
+    console.log('Deployed dappcom contract at:'+dappcom.address)
+
+    //list items..
+    for (let i = 0; i < items.length; i++) {
+      const transaction = await dappcom.connect(deployer).list(
+        items[i].id,
+        items[i].name,
+        items[i].category,
+        items[i].image,
+        tokens(items[i].price),
+        items[i].rating,
+        items[i].stock,
+      )
+  
+      await transaction.wait()
+      console.log(`Listed item ${items[i].id}: ${items[i].name}`)
+    }
 
 }
 
